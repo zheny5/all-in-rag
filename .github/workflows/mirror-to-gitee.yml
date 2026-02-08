@@ -8,6 +8,7 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,5 +23,13 @@ jobs:
         run: |
           set -e
           AUTH=$(printf '%s:%s' "$GITEE_USERNAME" "$GITEE_TOKEN" | base64 -w0)
-          git -c http.extraheader="Authorization: Basic $AUTH" push https://gitee.com/james_yu/all-in-rag.git --all
-          git -c http.extraheader="Authorization: Basic $AUTH" push https://gitee.com/james_yu/all-in-rag.git --tags
+          git -c http.extraheader="Authorization: Basic $AUTH" \
+              -c http.lowSpeedLimit=1 \
+              -c http.lowSpeedTime=60 \
+              -c http.postBuffer=524288000 \
+              push --progress https://gitee.com/james_yu/all-in-rag.git --all
+          git -c http.extraheader="Authorization: Basic $AUTH" \
+              -c http.lowSpeedLimit=1 \
+              -c http.lowSpeedTime=60 \
+              -c http.postBuffer=524288000 \
+              push --progress https://gitee.com/james_yu/all-in-rag.git --tags
