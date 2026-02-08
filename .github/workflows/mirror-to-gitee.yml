@@ -18,7 +18,9 @@ jobs:
         env:
           GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GIT_TERMINAL_PROMPT: 0
         run: |
-          git remote add gitee https://${GITEE_USERNAME}:${GITEE_TOKEN}@gitee.com/james_yu/all-in-rag.git
-          git push gitee --all
-          git push gitee --tags
+          set -e
+          AUTH=$(printf '%s:%s' "$GITEE_USERNAME" "$GITEE_TOKEN" | base64 -w0)
+          git -c http.extraheader="Authorization: Basic $AUTH" push https://gitee.com/james_yu/all-in-rag.git --all
+          git -c http.extraheader="Authorization: Basic $AUTH" push https://gitee.com/james_yu/all-in-rag.git --tags
